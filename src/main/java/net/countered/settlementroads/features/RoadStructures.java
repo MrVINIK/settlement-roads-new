@@ -1,5 +1,6 @@
 package net.countered.settlementroads.features;
 
+import net.countered.settlementroads.config.ModConfig;
 import net.countered.settlementroads.helpers.Records;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -9,6 +10,7 @@ import net.minecraft.block.entity.SignText;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.state.property.Properties;
 import net.minecraft.state.property.Property;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -37,8 +39,7 @@ public class RoadStructures {
             Vec3i orthogonalVector,
             int distance,
             boolean isStart,
-            DecorationType type,
-            String signText
+            DecorationType type
     ) {
         int rotation = getCardinalRotationFromVector(orthogonalVector, isStart);
 
@@ -56,7 +57,7 @@ public class RoadStructures {
             structureWorldAccess.setBlockState(surfacePos.up(2).offset(offsetDirection.getOpposite()), Blocks.SPRUCE_HANGING_SIGN.getDefaultState()
                     .with(Properties.ROTATION, rotation)
                     .with(Properties.ATTACHED, true), 3 );
-            updateSigns(structureWorldAccess, surfacePos.up(2).offset(offsetDirection.getOpposite()), signText);
+            updateSigns(structureWorldAccess, surfacePos.up(2).offset(offsetDirection.getOpposite()), distance);
         } else if (type == DecorationType.LANTERN) {
             structureWorldAccess.setBlockState(surfacePos.up(2).offset(offsetDirection.getOpposite()), Blocks.LANTERN.getDefaultState()
                     .with(Properties.HANGING, true), 3);
@@ -87,47 +88,50 @@ public class RoadStructures {
                     continue;
                 }
                 int centerBlockCount = roadDecoration.centerBlockCount();
-                String signText = roadDecoration.signText();
+                int distance = roadDecoration.distance();
                 Vec3i orthogonalVector = roadDecoration.vector();
                 boolean isStart = roadDecoration.isStart();
                 // place lantern
                 if (centerBlockCount % 60 == 0){
-                    RoadStructures.placeLantern(structureWorldAccess, surfacePos, orthogonalVector, 1, true);
+                    RoadStructures.placeLantern(structureWorldAccess, surfacePos, orthogonalVector, distance, true);
                 }
                 // place distance sign
                 if (centerBlockCount == 10){
-                    RoadStructures.placeDistanceSign(structureWorldAccess, surfacePos, orthogonalVector, 1, true, signText);
+                    RoadStructures.placeDistanceSign(structureWorldAccess, surfacePos, orthogonalVector, distance, true);
                 }
                 if (!isStart) {
-                    RoadStructures.placeDistanceSign(structureWorldAccess, surfacePos, orthogonalVector, 1, false, signText);
+                    RoadStructures.placeDistanceSign(structureWorldAccess, surfacePos, orthogonalVector, distance, false);
                 }
                 iterator.remove();
             }
         }
     }
 
-    private static void updateSigns(StructureWorldAccess structureWorldAccess, BlockPos surfacePos, String text) {
+    private static void updateSigns(StructureWorldAccess structureWorldAccess, BlockPos surfacePos, int distance) {
         Objects.requireNonNull(structureWorldAccess.getServer()).execute( () -> {
             BlockEntity signEntity = structureWorldAccess.getBlockEntity(surfacePos);
             if (signEntity instanceof HangingSignBlockEntity signBlockEntity) {
                 signBlockEntity.setWorld(structureWorldAccess.toServerWorld());
-                SignText signText = signBlockEntity.getText(true);
-                signText = (signText.withMessage(0, Text.literal("----------")));
-                signText = (signText.withMessage(1, Text.literal("Next Village")));
-                signText = (signText.withMessage(2, Text.literal(text + "m")));
-                signText = (signText.withMessage(3, Text.literal("----------")));
-                signBlockEntity.setText(signText, true);
-
-                SignText signTextBack = signBlockEntity.getText(false);
-                signTextBack = signTextBack.withMessage(0, Text.of("----------"));
-                signTextBack = signTextBack.withMessage(1, Text.of("Welcome"));
-                signTextBack = signTextBack.withMessage(2, Text.of("traveller"));
-                signTextBack = signTextBack.withMessage(3, Text.of("----------"));
-                signBlockEntity.setText(signTextBack, false);
-
+                addTextToHangingSign(signBlockEntity, ModConfig.nextVillageSignText, distance, true);
+                addTextToHangingSign(signBlockEntity, ModConfig.helloSignText, distance, false);
                 signBlockEntity.markDirty();
             }
         });
+    }
+
+    private static void addTextToHangingSign(HangingSignBlockEntity signBlockEntity, String text, int distance, boolean front) {
+        SignText signText = signBlockEntity.getText(front);
+        String[] lines = text.split("/");
+        for (int i = 0, linesLength = lines.length; i < linesLength; i++) {
+            String line = lines[i];
+            if (line.contains("%d")) {
+                line = line.formatted(distance);
+            }
+
+            MutableText message = Text.literal(line);
+            signText = (signText.withMessage(i, message));
+        }
+        signBlockEntity.setText(signText, front);
     }
 
     private static int getCardinalRotationFromVector(Vec3i vector, boolean start) {
@@ -152,10 +156,9 @@ public class RoadStructures {
             BlockPos surfacePos,
             Vec3i orthogonalVector,
             int distance,
-            boolean isStart,
-            String signText
+            boolean isStart
     ) {
-        placeDecoration(structureWorldAccess, surfacePos, orthogonalVector, distance, isStart, DecorationType.SIGN, signText);
+        placeDecoration(structureWorldAccess, surfacePos, orthogonalVector, distance, isStart, DecorationType.SIGN);
     }
 
     public static void placeLantern(
@@ -165,7 +168,7 @@ public class RoadStructures {
             int distance,
             boolean isStart
     ) {
-        placeDecoration(structureWorldAccess, surfacePos, orthogonalVector, distance, isStart, DecorationType.LANTERN, null);
+        placeDecoration(structureWorldAccess, surfacePos, orthogonalVector, distance, isStart, DecorationType.LANTERN);
     }
 
     public static void placeWaypointMarker(StructureWorldAccess worldAccess, BlockPos surfacePos) {

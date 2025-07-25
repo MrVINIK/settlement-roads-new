@@ -173,7 +173,7 @@ public class RoadFeature extends Feature<RoadFeatureConfig> {
                 ? placePos.add(orthogonalVector.multiply(1))
                 : placePos.subtract(orthogonalVector.multiply(1));
 
-        roadDecorationPlacementPositions.add(new Records.RoadDecoration(shiftedPos, orthogonalVector, segmentIndex, String.valueOf(middleBlockPositions.size()), isStart));
+        roadDecorationPlacementPositions.add(new Records.RoadDecoration(shiftedPos, orthogonalVector, segmentIndex, middleBlockPositions.size(), isStart));
     }
 
     private void placeOnSurface(StructureWorldAccess structureWorldAccess, BlockPos placePos, List<BlockState> material, int natural, Random deterministicRandom, int centerBlockCount, BlockPos nextPos, BlockPos prevPos, List<BlockPos> middleBlockPositions) {
