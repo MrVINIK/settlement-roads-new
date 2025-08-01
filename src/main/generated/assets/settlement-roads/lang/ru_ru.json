@@ -1,0 +1,22 @@
+{
+  "settlement-roads.midnightconfig.allowArtificial": "Разрешить искусственные дороги",
+  "settlement-roads.midnightconfig.allowArtificial.tooltip": "Генерируются ли искусственные дороги",
+  "settlement-roads.midnightconfig.allowNatural": "Разрешить природные дороги",
+  "settlement-roads.midnightconfig.allowNatural.tooltip": "Генерируются ли природные дороги",
+  "settlement-roads.midnightconfig.averagingRadius": "Радиус усреднения",
+  "settlement-roads.midnightconfig.averagingRadius.tooltip": "Объем сглаживания рельефа для искусственных дорог",
+  "settlement-roads.midnightconfig.category.pre-generation": "Предварительная генерация",
+  "settlement-roads.midnightconfig.category.roads": "Дороги",
+  "settlement-roads.midnightconfig.category.structures": "Структуры",
+  "settlement-roads.midnightconfig.distanceBetweenBuoys": "Расстояние между буями",
+  "settlement-roads.midnightconfig.distanceBetweenBuoys.tooltip": "Примерное расстояние между буями в блоках",
+  "settlement-roads.midnightconfig.initialLocatingCount": "Сколько структур искать при загрузке мира",
+  "settlement-roads.midnightconfig.initialLocatingCount.tooltip": "Выберите количество структур для поиска при загрузке. Больше значение = дольше загрузка",
+  "settlement-roads.midnightconfig.maxLocatingCount": "Максимальное количество структур для поиска",
+  "settlement-roads.midnightconfig.maxLocatingCount.tooltip": "Выберите максимум структур, для динамического поиска. Больше значение = больше памяти",
+  "settlement-roads.midnightconfig.placeWaypoints": "Размещать маяки вместо дорог",
+  "settlement-roads.midnightconfig.placeWaypoints.tooltip": "Отключает генерацию дорог в пользу маяков",
+  "settlement-roads.midnightconfig.structureToLocate": "Структура для поиска",
+  "settlement-roads.midnightconfig.structureToLocate.tooltip": "Выберите или введите нужную структуру. #minecraft:village, minecraft:village_plains или modid:custom_structure. Допускаются теги и ключи.",
+  "settlement-roads.midnightconfig.title": "Дороги поселений от Countered"
+}
