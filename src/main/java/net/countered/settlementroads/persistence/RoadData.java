@@ -8,6 +8,8 @@ import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateType;
+import com.mojang.serialization.Codec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,16 +32,12 @@ public class RoadData extends PersistentState {
 
     public static RoadData getOrCreateRoadData(ServerWorld world) {
         return world.getPersistentStateManager().getOrCreate(
-                RoadData.getPersistentStateType(world),
-                "road_data"
-        );
-    }
-
-    private static PersistentState.Type<RoadData> getPersistentStateType(ServerWorld world) {
-        return new PersistentState.Type<>(
-                () -> new RoadData(world),
-                (nbt, registries) -> fromNbt(world, nbt),
-                DataFixTypes.CHUNK
+                new PersistentStateType<RoadData>(
+                        "road_data",
+                        () -> new RoadData(world),
+                        Codec.unit(() -> new RoadData(world)),
+                        DataFixTypes.CHUNK
+                )
         );
     }
 
@@ -48,7 +46,6 @@ public class RoadData extends PersistentState {
         this.markDirty();
     }
 
-    @Override
     public NbtCompound writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registries) {
         NbtList nbtList = new NbtList();
         for (BlockPos pos : structureLocations) {
@@ -66,13 +63,13 @@ public class RoadData extends PersistentState {
 
     public static RoadData fromNbt(ServerWorld world, NbtCompound nbt) {
         RoadData roadData = new RoadData(world);
-        NbtList nbtList = nbt.getList(STRUCTURE_LOCATION_KEY, 10);
+        NbtList nbtList = nbt.getList(STRUCTURE_LOCATION_KEY).orElse(new NbtList());
 
         for (int i = 0; i < nbtList.size(); i++) {
-            NbtCompound villageData = nbtList.getCompound(i);
-            int x = villageData.getInt("X");
-            int y = villageData.getInt("Y");
-            int z = villageData.getInt("Z");
+            NbtCompound villageData = nbtList.getCompound(i).orElse(new NbtCompound());
+            int x = villageData.getInt("X").orElse(0);
+            int y = villageData.getInt("Y").orElse(0);
+            int z = villageData.getInt("Z").orElse(0);
             roadData.structureLocations.add(new BlockPos(x, y, z));
         }
         return roadData;

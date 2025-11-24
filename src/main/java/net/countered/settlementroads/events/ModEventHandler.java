@@ -77,9 +77,7 @@ public class ModEventHandler {
         });
     }
 
-    private static final ChunkTicketType<BlockPos> ROAD_TICKET = ChunkTicketType.create("road_ticket", Comparator.comparingLong(BlockPos::asLong));
-    private static final Set<ChunkPos> toRemove = ConcurrentHashMap.newKeySet();
-    private static final int MAX_BLOCKS_PER_TICK = 1;
+
 
     private static void loadRoadChunksCompletely(ServerWorld serverWorld) {
         if (!RoadFeature.roadChunksCache.isEmpty()) {
@@ -97,9 +95,9 @@ public class ModEventHandler {
                 Block blockAbove = worldChunk.getBlockState(postProcessingPos.up()).getBlock();
                 Block blockAtPos = worldChunk.getBlockState(postProcessingPos).getBlock();
                 if (blockAbove == Blocks.SNOW) {
-                    worldChunk.setBlockState(postProcessingPos.up(), Blocks.AIR.getDefaultState(), false);
+                    worldChunk.setBlockState(postProcessingPos.up(), Blocks.AIR.getDefaultState(), 3);
                     if (blockAtPos == Blocks.GRASS_BLOCK) {
-                        worldChunk.setBlockState(postProcessingPos, Blocks.GRASS_BLOCK.getDefaultState(), false);
+                        worldChunk.setBlockState(postProcessingPos, Blocks.GRASS_BLOCK.getDefaultState(), 3);
                     }
                 }
                 RoadFeature.roadPostProcessingPositions.remove(postProcessingPos);

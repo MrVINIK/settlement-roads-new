@@ -88,8 +88,9 @@ public class StructureLocator {
     }
 
     private static void addTagStructurePersistent(ServerWorld serverWorld, TagKey<Structure> structureTag, @Nullable ServerPlayerEntity player) {
+        BlockPos spawnPos = BlockPos.ORIGIN;
         BlockPos structureLocation = player != null ? serverWorld.locateStructure(structureTag, player.getBlockPos(), 50, true) :
-                                     serverWorld.locateStructure(structureTag, serverWorld.getSpawnPos(), 50, true);
+                                     serverWorld.locateStructure(structureTag, spawnPos, 50, true);
         if (structureLocation != null) {
             LOGGER.info(ModConfig.structureToLocate + " found at " + "/tp " + structureLocation.getX() + " " + 100 + " " + structureLocation.getZ());
             ModEventHandler.getRoadData(serverWorld).getStructureLocations().add(structureLocation);
@@ -100,12 +101,13 @@ public class StructureLocator {
     }
 
     private static void addKeyStructurePersistent(ServerWorld serverWorld, RegistryEntryList<Structure> registryEntryList, @Nullable ServerPlayerEntity player) {
+        BlockPos spawnPos = BlockPos.ORIGIN;
         Pair<BlockPos, RegistryEntry<Structure>> structureLocation = player != null ? serverWorld.getChunkManager()
                 .getChunkGenerator()
                 .locateStructure(serverWorld, registryEntryList, player.getBlockPos(), 50, true):
                 serverWorld.getChunkManager()
                         .getChunkGenerator()
-                        .locateStructure(serverWorld, registryEntryList, serverWorld.getSpawnPos(), 50, true);
+                        .locateStructure(serverWorld, registryEntryList, spawnPos, 50, true);
         if (structureLocation != null) {
             LOGGER.info("Structure found at " + structureLocation);
             ModEventHandler.getRoadData(serverWorld).getStructureLocations().add(structureLocation.getFirst());
